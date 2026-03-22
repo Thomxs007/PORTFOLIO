@@ -83,7 +83,7 @@ export default function Home() {
         <div className="hero-image animate-in">
           <div className="hero-image-wrapper">
             <div className="hero-image-glow"></div>
-            <img src="/profile.jpg" alt={profile.name} className="profile-img" />
+            <img src={`${import.meta.env.BASE_URL}profile.jpg`} alt={profile.name} className="profile-img" />
             <div className="hero-image-ring"></div>
           </div>
         </div>

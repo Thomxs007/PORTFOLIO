@@ -161,7 +161,7 @@ const SEED_EDUCATION = [
 const SEED_CONTACT = [
   { id: '1', href: 'mailto:thomasprinil10@gmail.com', icon: 'fas fa-envelope', label: 'Email', value: 'thomasprinil10@gmail.com', external: false },
   { id: '2', href: 'tel:+918075705571', icon: 'fas fa-phone-alt', label: 'Phone', value: '+91-8075705571', external: false },
-  { id: '3', href: 'https://www.linkedin.com/in/thomas-prinil', icon: 'fab fa-linkedin-in', label: 'LinkedIn', value: 'thomas-prinil', external: true },
+  { id: '3', href: 'https://www.linkedin.com/in/thomasprinil', icon: 'fab fa-linkedin-in', label: 'LinkedIn', value: 'thomas-prinil', external: true },
   { id: '4', href: 'https://github.com/Thomxs007', icon: 'fab fa-github', label: 'GitHub', value: 'Thomxs007', external: true },
 ];
 
@@ -280,3 +280,5 @@ export function getProfile() {
 export function saveProfile(profile) {
   localStorage.setItem(KEYS.profile, JSON.stringify(profile));
 }
+
+

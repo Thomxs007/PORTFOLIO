@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ParticleCanvas from './components/ParticleCanvas';
@@ -11,8 +11,15 @@ import Achievements from './pages/Achievements';
 import Education from './pages/Education';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
+import Login from './pages/Login';
 
 const basename = import.meta.env.BASE_URL;
+
+// Simple route protection
+function ProtectedRoute({ children }) {
+  const isAuthenticated = localStorage.getItem('portfolio_admin_auth') === 'true';
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+}
 
 export default function App() {
   return (
@@ -28,7 +35,15 @@ export default function App() {
         <Route path="/achievements" element={<Achievements />} />
         <Route path="/education" element={<Education />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/login" element={<Login />} />
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
       <Footer />
     </BrowserRouter>

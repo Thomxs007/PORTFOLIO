@@ -9,7 +9,10 @@ export default function Contact() {
 
   useEffect(() => { setContacts(getContacts()); }, []);
 
-  const emailContact = contacts.find((c) => c.icon === 'fas fa-envelope');
+  // Find email contact by label (case-insensitive) or by mailto: href
+  const emailContact = contacts.find(
+    (c) => c.label?.toLowerCase() === 'email' || c.href?.startsWith('mailto:')
+  );
 
   return (
     <div className="page" ref={ref}>
@@ -29,7 +32,8 @@ export default function Contact() {
                 href={c.href}
                 className="contact-card"
                 key={c.id}
-                {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                target={c.external ? '_blank' : '_self'}
+                rel={c.external ? 'noopener noreferrer' : undefined}
               >
                 <div className="contact-card-icon"><i className={c.icon}></i></div>
                 <h3>{c.label}</h3>
@@ -37,13 +41,16 @@ export default function Contact() {
               </a>
             ))}
           </div>
-          {emailContact && (
-            <a href={emailContact.href} className="btn btn-primary btn-large">
-              <i className="fas fa-paper-plane"></i> Say Hello
-            </a>
-          )}
+          <a
+            href={emailContact ? emailContact.href : 'mailto:thomasprinil10@gmail.com'}
+            className="btn btn-primary btn-large"
+            target="_self"
+          >
+            <i className="fas fa-paper-plane"></i> Say Hello
+          </a>
         </div>
       </div>
     </div>
   );
 }
+
