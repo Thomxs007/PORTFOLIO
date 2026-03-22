@@ -3,8 +3,8 @@
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 90%;
-  max-width: 900px;
+  width: 95%;
+  max-width: 1050px;
   z-index: 1000;
   padding: 12px 24px;
   background: var(--bg-secondary);
@@ -53,8 +53,9 @@
 
 .nav-link:hover,
 .nav-link.active {
-  color: var(--bg-primary);
+  color: #000000;
   background: var(--accent-primary);
+  font-weight: 700;
 }
 
 .nav-cta {

@@ -42,7 +42,7 @@ export default function Contact() {
             ))}
           </div>
           <a
-            href={emailContact ? emailContact.href : 'mailto:thomasprinil10@gmail.com'}
+            href="mailto:thomasprinil10@gmail.com"
             className="btn btn-primary btn-large"
             target="_self"
           >
