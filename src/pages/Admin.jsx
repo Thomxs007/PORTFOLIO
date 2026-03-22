@@ -61,6 +61,20 @@ function ProfileTab({ showToast }) {
         </div>
       </div>
       <div className="form-group">
+        <label>Resume (PDF URL or File Upload)</label>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input name="resumeUrl" value={form.resumeUrl || ''} onChange={handleChange} placeholder="https://..." style={{ flex: 1 }} />
+          <input type="file" accept=".pdf" onChange={(e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (ev) => setForm({ ...form, resumeUrl: ev.target.result });
+              reader.readAsDataURL(file);
+            }
+          }} style={{ padding: '8px' }} />
+        </div>
+      </div>
+      <div className="form-group">
         <label>Typewriter Roles (comma-separated)</label>
         <input name="roles" value={rolesVal} onChange={handleChange} placeholder="Software Developer, ML Enthusiast" />
       </div>
@@ -287,12 +301,13 @@ const certConfig = {
   getAll: getCertificates, add: addCertificate, update: updateCertificate, delete: deleteCertificate,
   fields: [
     { name: 'title', label: 'Certificate Title', required: true },
+    { name: 'link', label: 'Verify Link URL', half: true, placeholder: 'https://...' },
     { name: 'issuer', label: 'Issuer', required: true, half: true },
     { name: 'date', label: 'Date', required: true, half: true },
     { name: 'icon', label: 'Icon Class', half: true, placeholder: 'fas fa-university' },
   ],
-  serialize: (f) => ({ title: f.title, issuer: f.issuer, date: f.date, icon: f.icon || 'fas fa-university' }),
-  deserialize: (c) => ({ title: c.title, issuer: c.issuer, date: c.date, icon: c.icon || 'fas fa-university' }),
+  serialize: (f) => ({ title: f.title, issuer: f.issuer, date: f.date, icon: f.icon || 'fas fa-university', link: f.link }),
+  deserialize: (c) => ({ title: c.title, issuer: c.issuer, date: c.date, icon: c.icon || 'fas fa-university', link: c.link }),
   itemIcon: (c) => 'fas fa-certificate',
   itemTitle: (c) => c.title,
   itemMeta: (c) => `${c.issuer} · ${c.date}`,

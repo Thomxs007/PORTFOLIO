@@ -22,7 +22,7 @@ const SEED_PROJECTS = [
     title: 'Phishing Website Detection System',
     date: 'July 2025',
     icon: 'fas fa-shield-alt',
-    github: 'https://github.com/Thomxs007',
+    github: 'https://github.com/Thomxs007/Phishing-Url-Detection',
     description: [
       'Built supervised ML system to detect phishing websites using the UCI Phishing Dataset with 30+ real-time URL features.',
       'Trained Random Forest & XGBoost models achieving 97% test accuracy after GridSearchCV tuning.',
@@ -36,7 +36,7 @@ const SEED_PROJECTS = [
     title: 'Time-Decaying Memory PSO for Multi-Robot Coordination',
     date: 'March 2025',
     icon: 'fas fa-robot',
-    github: 'https://github.com/Thomxs007',
+    github: 'https://github.com/Thomxs007/tdmps-optimization',
     description: [
       'Developed enhanced Particle Swarm Optimization algorithm with time-decaying memory for multi-robot path planning.',
       'Designed and simulated the system in Python to improve convergence speed and cooperative behavior.',

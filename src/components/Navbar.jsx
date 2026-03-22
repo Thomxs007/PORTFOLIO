@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getProfile } from '../data/store';
 import './Navbar.css';
 
 const links = [
@@ -15,6 +16,11 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    setProfile(getProfile());
+  }, []);
 
   return (
     <nav className="navbar">
@@ -37,6 +43,20 @@ export default function Navbar() {
               </NavLink>
             </li>
           ))}
+          {profile?.resumeUrl && (
+            <li>
+              <a 
+                href={profile.resumeUrl} 
+                download="Thomas_Prinil_Resume.pdf" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="nav-link nav-cta"
+                style={{ marginLeft: '10px' }}
+              >
+                <i className="fas fa-download"></i> Resume
+              </a>
+            </li>
+          )}
         </ul>
         <button
           className={`nav-toggle${open ? ' active' : ''}`}
