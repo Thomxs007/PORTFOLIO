@@ -1,0 +1,16 @@
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 30px;
+}
+
+.no-projects {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  padding: 60px 0;
+}
+
+@media (max-width: 480px) {
+  .projects-grid { grid-template-columns: 1fr; }
+}
