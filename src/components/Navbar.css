@@ -4,7 +4,7 @@
   left: 50%;
   transform: translateX(-50%);
   width: 95%;
-  max-width: 1050px;
+  max-width: 1200px;
   z-index: 1000;
   padding: 12px 24px;
   background: var(--bg-secondary);
