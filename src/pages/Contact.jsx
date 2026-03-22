@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
-import { getContacts } from '../data/store';
+import { getContacts, getProfile, getResume } from '../data/store';
 import useScrollReveal from '../hooks/useScrollReveal';
 import './Contact.css';
 
 export default function Contact() {
   const [contacts, setContacts] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [resumeUrl, setResumeUrl] = useState('');
   const ref = useScrollReveal([contacts]);
 
-  useEffect(() => { setContacts(getContacts()); }, []);
+  useEffect(() => {
+    getContacts().then(setContacts);
+    getProfile().then(setProfile);
+    getResume().then(setResumeUrl);
+  }, []);
 
   // Find email contact by label (case-insensitive) or by mailto: href
   const emailContact = contacts.find(

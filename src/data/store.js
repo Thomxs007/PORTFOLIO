@@ -1,6 +1,9 @@
+import { db } from './firebase';
+import { collection, getDocs, doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
+
 /**
  * Unified data store for the entire portfolio.
- * All data is persisted in localStorage so the admin panel can manage everything.
+ * Data is persisted in Firebase Firestore (if configured) or localStorage as a fallback.
  */
 
 // ─── Storage Keys ───────────────────────────────────────────
@@ -189,7 +192,19 @@ const SEED_PROFILE = {
 
 // ─── Generic CRUD Helpers ───────────────────────────────────
 
-function getCollection(key, seed) {
+async function getCollection(key, seed) {
+  if (db) {
+    try {
+      const snap = await getDocs(collection(db, key));
+      if (!snap.empty) {
+        return snap.docs.map(d => d.data());
+      }
+      for (const item of seed) {
+        await setDoc(doc(db, key, item.id), item);
+      }
+      return seed;
+    } catch (e) { console.warn("Firestore error:", e); }
+  }
   const stored = localStorage.getItem(key);
   if (!stored) {
     localStorage.setItem(key, JSON.stringify(seed));
@@ -198,78 +213,95 @@ function getCollection(key, seed) {
   return JSON.parse(stored);
 }
 
-function saveCollection(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
+async function saveCollection(key, data) {
+  if (db) {
+    for (const item of data) await setDoc(doc(db, key, item.id), item);
+  } else {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
 }
 
-function addItem(key, seed, item) {
-  const items = getCollection(key, seed);
+async function addItem(key, seed, item) {
   const newItem = { ...item, id: Date.now().toString() };
-  items.push(newItem);
-  saveCollection(key, items);
-  return items;
+  if (db) {
+    await setDoc(doc(db, key, newItem.id), newItem);
+  } else {
+    const items = await getCollection(key, seed);
+    items.push(newItem);
+    localStorage.setItem(key, JSON.stringify(items));
+  }
+  return getCollection(key, seed);
 }
 
-function updateItem(key, seed, id, updates) {
-  const items = getCollection(key, seed);
-  const idx = items.findIndex((i) => i.id === id);
-  if (idx !== -1) items[idx] = { ...items[idx], ...updates };
-  saveCollection(key, items);
-  return items;
+async function updateItem(key, seed, id, updates) {
+  if (db) {
+    await setDoc(doc(db, key, id), updates, { merge: true });
+  } else {
+    const items = await getCollection(key, seed);
+    const idx = items.findIndex((i) => i.id === id);
+    if (idx !== -1) items[idx] = { ...items[idx], ...updates };
+    localStorage.setItem(key, JSON.stringify(items));
+  }
+  return getCollection(key, seed);
 }
 
-function deleteItem(key, seed, id) {
-  const items = getCollection(key, seed).filter((i) => i.id !== id);
-  saveCollection(key, items);
-  return items;
+async function deleteItem(key, seed, id) {
+  if (db) {
+    await deleteDoc(doc(db, key, id));
+  } else {
+    const items = await getCollection(key, seed);
+    localStorage.setItem(key, JSON.stringify(items.filter(i => i.id !== id)));
+  }
+  return getCollection(key, seed);
 }
 
 // ─── Public API ─────────────────────────────────────────────
 
-// Projects
 export const getProjects = () => getCollection(KEYS.projects, SEED_PROJECTS);
 export const saveProjects = (d) => saveCollection(KEYS.projects, d);
 export const addProject = (item) => addItem(KEYS.projects, SEED_PROJECTS, item);
 export const updateProject = (id, u) => updateItem(KEYS.projects, SEED_PROJECTS, id, u);
 export const deleteProject = (id) => deleteItem(KEYS.projects, SEED_PROJECTS, id);
 
-// Skills
 export const getSkills = () => getCollection(KEYS.skills, SEED_SKILLS);
 export const saveSkills = (d) => saveCollection(KEYS.skills, d);
 export const addSkill = (item) => addItem(KEYS.skills, SEED_SKILLS, item);
 export const updateSkill = (id, u) => updateItem(KEYS.skills, SEED_SKILLS, id, u);
 export const deleteSkill = (id) => deleteItem(KEYS.skills, SEED_SKILLS, id);
 
-// Certificates
 export const getCertificates = () => getCollection(KEYS.certificates, SEED_CERTIFICATES);
 export const saveCertificates = (d) => saveCollection(KEYS.certificates, d);
 export const addCertificate = (item) => addItem(KEYS.certificates, SEED_CERTIFICATES, item);
 export const updateCertificate = (id, u) => updateItem(KEYS.certificates, SEED_CERTIFICATES, id, u);
 export const deleteCertificate = (id) => deleteItem(KEYS.certificates, SEED_CERTIFICATES, id);
 
-// Achievements
 export const getAchievements = () => getCollection(KEYS.achievements, SEED_ACHIEVEMENTS);
 export const saveAchievements = (d) => saveCollection(KEYS.achievements, d);
 export const addAchievement = (item) => addItem(KEYS.achievements, SEED_ACHIEVEMENTS, item);
 export const updateAchievement = (id, u) => updateItem(KEYS.achievements, SEED_ACHIEVEMENTS, id, u);
 export const deleteAchievement = (id) => deleteItem(KEYS.achievements, SEED_ACHIEVEMENTS, id);
 
-// Education
 export const getEducation = () => getCollection(KEYS.education, SEED_EDUCATION);
 export const saveEducation = (d) => saveCollection(KEYS.education, d);
 export const addEducation = (item) => addItem(KEYS.education, SEED_EDUCATION, item);
 export const updateEducation = (id, u) => updateItem(KEYS.education, SEED_EDUCATION, id, u);
 export const deleteEducation = (id) => deleteItem(KEYS.education, SEED_EDUCATION, id);
 
-// Contact
 export const getContacts = () => getCollection(KEYS.contact, SEED_CONTACT);
 export const saveContacts = (d) => saveCollection(KEYS.contact, d);
 export const addContact = (item) => addItem(KEYS.contact, SEED_CONTACT, item);
 export const updateContact = (id, u) => updateItem(KEYS.contact, SEED_CONTACT, id, u);
 export const deleteContact = (id) => deleteItem(KEYS.contact, SEED_CONTACT, id);
 
-// Profile (single object, not array)
-export function getProfile() {
+export async function getProfile() {
+  if (db) {
+    try {
+      const snap = await getDoc(doc(db, 'system', KEYS.profile));
+      if (snap.exists()) return snap.data();
+      await setDoc(doc(db, 'system', KEYS.profile), SEED_PROFILE);
+      return SEED_PROFILE;
+    } catch (e) { console.warn(e); }
+  }
   const stored = localStorage.getItem(KEYS.profile);
   if (!stored) {
     localStorage.setItem(KEYS.profile, JSON.stringify(SEED_PROFILE));
@@ -278,17 +310,31 @@ export function getProfile() {
   return JSON.parse(stored);
 }
 
-export function saveProfile(profile) {
-  localStorage.setItem(KEYS.profile, JSON.stringify(profile));
+export async function saveProfile(profile) {
+  if (db) {
+    await setDoc(doc(db, 'system', KEYS.profile), profile);
+  } else {
+    localStorage.setItem(KEYS.profile, JSON.stringify(profile));
+  }
 }
 
-// Resume
-export function getResume() {
+export async function getResume() {
+  if (db) {
+    try {
+      const snap = await getDoc(doc(db, 'system', KEYS.resume));
+      if (snap.exists()) return snap.data().url || '';
+      return '';
+    } catch (e) { console.warn(e); }
+  }
   return localStorage.getItem(KEYS.resume) || '';
 }
 
-export function saveResume(url) {
-  localStorage.setItem(KEYS.resume, url);
+export async function saveResume(url) {
+  if (db) {
+    await setDoc(doc(db, 'system', KEYS.resume), { url });
+  } else {
+    localStorage.setItem(KEYS.resume, url);
+  }
 }
 
 

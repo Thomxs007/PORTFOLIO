@@ -12,7 +12,7 @@ export default function Home() {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    setProfile(getProfile());
+    getProfile().then(setProfile);
   }, []);
 
   // Pass profile as dep so scroll reveal re-fires after data loads

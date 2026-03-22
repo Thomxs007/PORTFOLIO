@@ -7,7 +7,9 @@ export default function Education() {
   const [education, setEducation] = useState([]);
   const ref = useScrollReveal([education]);
 
-  useEffect(() => { setEducation(getEducation()); }, []);
+  useEffect(() => {
+    getEducation().then(setEducation);
+  }, []);
 
   return (
     <div className="page page-alt" ref={ref}>

@@ -7,7 +7,9 @@ export default function Achievements() {
   const [achievements, setAchievements] = useState([]);
   const ref = useScrollReveal([achievements]);
 
-  useEffect(() => { setAchievements(getAchievements()); }, []);
+  useEffect(() => {
+    getAchievements().then(setAchievements);
+  }, []);
 
   return (
     <div className="page" ref={ref}>

@@ -21,8 +21,8 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    setProfile(getProfile());
-    setResumeUrl(getResume());
+    getProfile().then(setProfile);
+    getResume().then(setResumeUrl);
   }, []);
 
   if (location.pathname === '/admin' || location.pathname === '/login') {

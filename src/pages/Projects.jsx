@@ -8,7 +8,9 @@ export default function Projects() {
   const [projects, setProjects] = useState([]);
   const ref = useScrollReveal([projects]);
 
-  useEffect(() => { setProjects(getProjects()); }, []);
+  useEffect(() => {
+    getProjects().then(setProjects);
+  }, []);
 
   return (
     <div className="page" ref={ref}>

@@ -29,13 +29,15 @@ function Toast({ message }) {
 
 // ━━━━ Profile Tab ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function ProfileTab({ showToast }) {
-  const [form, setForm] = useState(getProfile());
+  const [form, setForm] = useState(null);
+
+  useEffect(() => { getProfile().then(setForm); }, []);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSave(e) {
+  async function handleSave(e) {
     e.preventDefault();
     const updated = {
       ...form,
@@ -43,9 +45,11 @@ function ProfileTab({ showToast }) {
       aboutParagraphs: form.aboutParagraphs?.split ? form.aboutParagraphs.split('\n\n').filter(Boolean) : form.aboutParagraphs,
       stats: form.stats,
     };
-    saveProfile(updated);
+    await saveProfile(updated);
     showToast('Profile updated!');
   }
+
+  if (!form) return <div className="admin-toast">Loading Profile...</div>;
 
   const rolesVal = Array.isArray(form.roles) ? form.roles.join(', ') : form.roles || '';
   const aboutVal = Array.isArray(form.aboutParagraphs) ? form.aboutParagraphs.join('\n\n') : form.aboutParagraphs || '';
@@ -134,11 +138,13 @@ function ProfileTab({ showToast }) {
 
 // ━━━━ Resume Tab ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function ResumeTab({ showToast }) {
-  const [resumeUrl, setResumeUrl] = useState(getResume());
+  const [resumeUrl, setResumeUrl] = useState('');
 
-  function handleSave(e) {
+  useEffect(() => { getResume().then(setResumeUrl); }, []);
+
+  async function handleSave(e) {
     e.preventDefault();
-    saveResume(resumeUrl);
+    await saveResume(resumeUrl);
     showToast('Resume saved successfully!');
   }
 
@@ -194,22 +200,23 @@ function CrudTab({ config, showToast }) {
   const [form, setForm] = useState({});
   const [editId, setEditId] = useState(null);
 
-  useEffect(() => { setItems(config.getAll()); }, []);
+  useEffect(() => { config.getAll().then(setItems); }, [config]);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const data = config.serialize(form);
     if (editId) {
-      setItems(config.update(editId, data));
+      await config.update(editId, data);
+      config.getAll().then(setItems);
       setEditId(null);
       showToast(`${config.label} updated!`);
     } else {
-      config.add(data);
-      setItems(config.getAll());
+      await config.add(data);
+      config.getAll().then(setItems);
       showToast(`${config.label} added!`);
     }
     setForm({});
@@ -221,9 +228,10 @@ function CrudTab({ config, showToast }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function handleDelete(id) {
+  async function handleDelete(id) {
     if (window.confirm(`Delete this ${config.label.toLowerCase()}?`)) {
-      setItems(config.delete(id));
+      await config.delete(id);
+      config.getAll().then(setItems);
       showToast(`${config.label} deleted.`);
     }
   }

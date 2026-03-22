@@ -7,7 +7,9 @@ export default function Certificates() {
   const [certs, setCerts] = useState([]);
   const ref = useScrollReveal([certs]);
 
-  useEffect(() => { setCerts(getCertificates()); }, []);
+  useEffect(() => {
+    getCertificates().then(setCerts);
+  }, []);
 
   return (
     <div className="page page-alt" ref={ref}>

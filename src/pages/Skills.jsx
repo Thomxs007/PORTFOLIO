@@ -78,7 +78,9 @@ export default function Skills() {
   const [skills, setSkills] = useState([]);
   const ref = useScrollReveal([skills]);
 
-  useEffect(() => { setSkills(getSkills()); }, []);
+  useEffect(() => {
+    getSkills().then(setSkills);
+  }, []);
 
   const totalSkills = skills.reduce((sum, cat) => sum + cat.tags.length, 0);
 
