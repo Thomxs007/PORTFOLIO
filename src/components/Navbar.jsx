@@ -43,20 +43,18 @@ export default function Navbar() {
               </NavLink>
             </li>
           ))}
-          {profile?.resumeUrl && (
-            <li>
-              <a 
-                href={profile.resumeUrl} 
-                download="Thomas_Prinil_Resume.pdf" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="nav-link nav-cta"
-                style={{ marginLeft: '10px' }}
-              >
-                <i className="fas fa-download"></i> Resume
-              </a>
-            </li>
-          )}
+          <li>
+            <a 
+              href={profile?.resumeUrl || `${import.meta.env.BASE_URL}Thomas_Prinil_Resume.pdf`} 
+              download="Thomas_Prinil_Resume.pdf" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="nav-link nav-cta"
+              style={{ marginLeft: '10px' }}
+            >
+              <i className="fas fa-download"></i> Resume
+            </a>
+          </li>
         </ul>
         <button
           className={`nav-toggle${open ? ' active' : ''}`}
