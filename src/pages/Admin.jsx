@@ -7,6 +7,7 @@ import {
   getEducation, addEducation, updateEducation, deleteEducation,
   getContacts, addContact, updateContact, deleteContact,
   getProfile, saveProfile,
+  getResume, saveResume,
 } from '../data/store';
 import './Admin.css';
 
@@ -133,12 +134,11 @@ function ProfileTab({ showToast }) {
 
 // ━━━━ Resume Tab ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function ResumeTab({ showToast }) {
-  const [resumeUrl, setResumeUrl] = useState(getProfile().resumeUrl || '');
+  const [resumeUrl, setResumeUrl] = useState(getResume());
 
   function handleSave(e) {
     e.preventDefault();
-    const profile = getProfile();
-    saveProfile({ ...profile, resumeUrl });
+    saveResume(resumeUrl);
     showToast('Resume saved successfully!');
   }
 

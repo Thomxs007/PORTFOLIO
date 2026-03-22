@@ -1,6 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { getProfile } from '../data/store';
+import { getProfile, getResume } from '../data/store';
 import './Navbar.css';
 
 const links = [
@@ -17,10 +17,12 @@ const links = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [profile, setProfile] = useState(null);
+  const [resumeUrl, setResumeUrl] = useState('');
   const location = useLocation();
 
   useEffect(() => {
     setProfile(getProfile());
+    setResumeUrl(getResume());
   }, []);
 
   if (location.pathname === '/admin' || location.pathname === '/login') {
@@ -50,7 +52,7 @@ export default function Navbar() {
           ))}
           <li>
             <a 
-              href={profile?.resumeUrl || `${import.meta.env.BASE_URL}Thomas_Prinil_Resume.pdf`} 
+              href={resumeUrl || `${import.meta.env.BASE_URL}Thomas_Prinil_Resume.pdf`} 
               download="Thomas_Prinil_Resume.pdf" 
               target="_blank" 
               rel="noopener noreferrer" 

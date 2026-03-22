@@ -12,6 +12,7 @@ const KEYS = {
   education: 'portfolio_education',
   contact: 'portfolio_contact',
   profile: 'portfolio_profile',
+  resume: 'portfolio_resume',
 };
 
 // ─── Seed Data ──────────────────────────────────────────────
@@ -279,6 +280,15 @@ export function getProfile() {
 
 export function saveProfile(profile) {
   localStorage.setItem(KEYS.profile, JSON.stringify(profile));
+}
+
+// Resume
+export function getResume() {
+  return localStorage.getItem(KEYS.resume) || '';
+}
+
+export function saveResume(url) {
+  localStorage.setItem(KEYS.resume, url);
 }
 
 
