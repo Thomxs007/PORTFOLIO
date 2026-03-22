@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getProfile } from '../data/store';
 import './Navbar.css';
@@ -17,10 +17,15 @@ const links = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [profile, setProfile] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     setProfile(getProfile());
   }, []);
+
+  if (location.pathname === '/admin' || location.pathname === '/login') {
+    return null;
+  }
 
   return (
     <nav className="navbar">

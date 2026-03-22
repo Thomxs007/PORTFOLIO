@@ -18,6 +18,7 @@ const TABS = [
   { key: 'achievements', label: 'Achievements', icon: 'fas fa-trophy' },
   { key: 'education', label: 'Education', icon: 'fas fa-graduation-cap' },
   { key: 'contact', label: 'Contact', icon: 'fas fa-address-book' },
+  { key: 'resume', label: 'Resume', icon: 'fas fa-file-pdf' },
 ];
 
 function Toast({ message }) {
@@ -58,20 +59,6 @@ function ProfileTab({ showToast }) {
         <div className="form-group">
           <label>Greeting Text</label>
           <input name="greeting" value={form.greeting || ''} onChange={handleChange} />
-        </div>
-      </div>
-      <div className="form-group">
-        <label>Resume (PDF URL or File Upload)</label>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <input name="resumeUrl" value={form.resumeUrl || ''} onChange={handleChange} placeholder="https://..." style={{ flex: 1 }} />
-          <input type="file" accept=".pdf" onChange={(e) => {
-            const file = e.target.files[0];
-            if (file) {
-              const reader = new FileReader();
-              reader.onload = (ev) => setForm({ ...form, resumeUrl: ev.target.result });
-              reader.readAsDataURL(file);
-            }
-          }} style={{ padding: '8px' }} />
         </div>
       </div>
       <div className="form-group">
@@ -139,6 +126,63 @@ function ProfileTab({ showToast }) {
 
       <div className="form-actions">
         <button type="submit" className="btn btn-primary"><i className="fas fa-save"></i> Save Profile</button>
+      </div>
+    </form>
+  );
+}
+
+// ━━━━ Resume Tab ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function ResumeTab({ showToast }) {
+  const [resumeUrl, setResumeUrl] = useState(getProfile().resumeUrl || '');
+
+  function handleSave(e) {
+    e.preventDefault();
+    const profile = getProfile();
+    saveProfile({ ...profile, resumeUrl });
+    showToast('Resume saved successfully!');
+  }
+
+  return (
+    <form className="admin-form glass-card" onSubmit={handleSave}>
+      <h3 className="admin-subtitle">
+        <i className="fas fa-file-pdf"></i> Upload Resume
+      </h3>
+      <p style={{ marginBottom: '20px', color: 'var(--text-secondary)' }}>
+        Upload a PDF file. This will automatically update the "Resume" button in the Navbar.
+      </p>
+      
+      <div className="form-group">
+        <label>Select PDF File</label>
+        <input 
+          type="file" 
+          accept=".pdf" 
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                setResumeUrl(ev.target.result);
+                showToast('File loaded, ready to save!');
+              };
+              reader.readAsDataURL(file);
+            }
+          }} 
+          style={{ padding: '12px', background: 'var(--bg-primary)', borderRadius: '8px', border: '1px solid var(--glass-border)', width: '100%', color: 'var(--text-primary)' }} 
+        />
+      </div>
+
+      {resumeUrl && (
+        <div className="form-group" style={{ marginTop: '15px' }}>
+          <a href={resumeUrl} download="Thomas_Prinil_Resume.pdf" className="btn btn-outline btn-sm">
+            <i className="fas fa-download"></i> Test Resume Download
+          </a>
+        </div>
+      )}
+
+      <div className="form-actions" style={{ marginTop: '20px' }}>
+        <button type="submit" className="btn btn-primary">
+          <i className="fas fa-save"></i> Save Resume
+        </button>
       </div>
     </form>
   );
@@ -420,7 +464,8 @@ export default function Admin() {
 
         <div className="admin-tab-content">
           {activeTab === 'profile' && <ProfileTab showToast={showToast} />}
-          {activeTab !== 'profile' && TAB_CONFIGS[activeTab] && (
+          {activeTab === 'resume' && <ResumeTab showToast={showToast} />}
+          {activeTab !== 'profile' && activeTab !== 'resume' && TAB_CONFIGS[activeTab] && (
             <CrudTab key={activeTab} config={TAB_CONFIGS[activeTab]} showToast={showToast} />
           )}
         </div>
