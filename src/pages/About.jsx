@@ -35,7 +35,7 @@ function Counter({ target, suffix = '' }) {
 export default function About() {
   const [profile, setProfile] = useState(null);
 
-  useEffect(() => { setProfile(getProfile()); }, []);
+  useEffect(() => { getProfile().then(setProfile); }, []);
 
   // Pass profile as dep so scroll reveal re-fires after data loads
   const ref = useScrollReveal([profile]);

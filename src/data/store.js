@@ -213,16 +213,21 @@ async function getCollection(key, seed) {
   return JSON.parse(stored);
 }
 
+function sanitize(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 async function saveCollection(key, data) {
+  const cleanData = sanitize(data);
   if (db) {
-    for (const item of data) await setDoc(doc(db, key, item.id), item);
+    for (const item of cleanData) await setDoc(doc(db, key, item.id), item);
   } else {
-    localStorage.setItem(key, JSON.stringify(data));
+    localStorage.setItem(key, JSON.stringify(cleanData));
   }
 }
 
 async function addItem(key, seed, item) {
-  const newItem = { ...item, id: Date.now().toString() };
+  const newItem = sanitize({ ...item, id: Date.now().toString() });
   if (db) {
     await setDoc(doc(db, key, newItem.id), newItem);
   } else {
@@ -234,12 +239,13 @@ async function addItem(key, seed, item) {
 }
 
 async function updateItem(key, seed, id, updates) {
+  const cleanUpdates = sanitize(updates);
   if (db) {
-    await setDoc(doc(db, key, id), updates, { merge: true });
+    await setDoc(doc(db, key, id), cleanUpdates, { merge: true });
   } else {
     const items = await getCollection(key, seed);
     const idx = items.findIndex((i) => i.id === id);
-    if (idx !== -1) items[idx] = { ...items[idx], ...updates };
+    if (idx !== -1) items[idx] = { ...items[idx], ...cleanUpdates };
     localStorage.setItem(key, JSON.stringify(items));
   }
   return getCollection(key, seed);
