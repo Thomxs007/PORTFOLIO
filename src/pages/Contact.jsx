@@ -33,24 +33,32 @@ export default function Contact() {
             feel free to reach out!
           </p>
           <div className="contact-cards">
-            {contacts.map((c) => (
-              <a
-                href={c.href}
-                className="contact-card"
-                key={c.id}
-                target={c.external ? '_blank' : '_self'}
-                rel={c.external ? 'noopener noreferrer' : undefined}
-              >
-                <div className="contact-card-icon"><i className={c.icon}></i></div>
-                <h3>{c.label}</h3>
-                <p>{c.value}</p>
-              </a>
-            ))}
+            {contacts.map((c) => {
+              const isEmail = c.href?.startsWith('mailto:');
+              const finalHref = isEmail 
+                ? `https://mail.google.com/mail/?view=cm&fs=1&to=${c.href.replace('mailto:', '')}`
+                : c.href;
+              
+              return (
+                <a
+                  href={finalHref}
+                  className="contact-card"
+                  key={c.id}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="contact-card-icon"><i className={c.icon}></i></div>
+                  <h3>{c.label}</h3>
+                  <p>{c.value}</p>
+                </a>
+              );
+            })}
           </div>
           <a
-            href="mailto:thomasprinil10@gmail.com"
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=thomasprinil10@gmail.com"
             className="btn btn-primary btn-large"
-            target="_self"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <i className="fas fa-paper-plane"></i> Say Hello
           </a>
